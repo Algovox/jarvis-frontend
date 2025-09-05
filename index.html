@@ -10,7 +10,7 @@
     .msg { margin: 5px 0; }
     .user { color: #38bdf8; }
     .bot { color: #facc15; }
-    input { width: 80%; padding: 10px; border-radius: 5px; border: none; }
+    input { width: 70%; padding: 10px; border-radius: 5px; border: none; }
     button { padding: 10px 15px; margin-left: 5px; background: #38bdf8; border: none; border-radius: 5px; color: #000; cursor: pointer; }
   </style>
 </head>
@@ -30,13 +30,18 @@
       chatBox.innerHTML += `<div class="msg user">🧑: ${msg}</div>`;
       document.getElementById("message").value = "";
 
-      const res = await fetch("https://YOUR-BACKEND.onrender.com/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg })
-      });
-      const data = await res.json();
-      chatBox.innerHTML += `<div class="msg bot">🤖: ${data.reply}</div>`;
+      try {
+        const res = await fetch("https://my-jarvis-1-c6h0.onrender.com/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        chatBox.innerHTML += `<div class="msg bot">🤖: ${data.reply}</div>`;
+      } catch (err) {
+        chatBox.innerHTML += `<div class="msg bot">⚠️ Error: ${err.message}</div>`;
+      }
+
       chatBox.scrollTop = chatBox.scrollHeight;
     }
   </script>

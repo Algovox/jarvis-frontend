@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis AI Chat</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+    #chat { width: 100%; max-width: 500px; height: 400px; overflow-y: auto; border: 1px solid #444; padding: 10px; margin-bottom: 10px; background: #1e293b; border-radius: 10px; }
+    .msg { margin: 5px 0; }
+    .user { color: #38bdf8; }
+    .bot { color: #facc15; }
+    input { width: 80%; padding: 10px; border-radius: 5px; border: none; }
+    button { padding: 10px 15px; margin-left: 5px; background: #38bdf8; border: none; border-radius: 5px; color: #000; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🤖 Jarvis AI</h1>
+  <div id="chat"></div>
+  <div>
+    <input id="message" placeholder="Type your message..."/>
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat");
+    async function sendMessage() {
+      const msg = document.getElementById("message").value;
+      if (!msg) return;
+      chatBox.innerHTML += `<div class="msg user">🧑: ${msg}</div>`;
+      document.getElementById("message").value = "";
+
+      const res = await fetch("https://YOUR-BACKEND.onrender.com/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+      });
+      const data = await res.json();
+      chatBox.innerHTML += `<div class="msg bot">🤖: ${data.reply}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>

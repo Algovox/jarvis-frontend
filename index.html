@@ -3,32 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jarvis AI Chat</title>
+  <title>Jarvis AI</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-    #chat { width: 100%; max-width: 500px; height: 400px; overflow-y: auto; border: 1px solid #444; padding: 10px; margin-bottom: 10px; background: #1e293b; border-radius: 10px; }
-    .msg { margin: 5px 0; }
-    .user { color: #38bdf8; }
-    .bot { color: #facc15; }
-    input { width: 70%; padding: 10px; border-radius: 5px; border: none; }
-    button { padding: 10px 15px; margin-left: 5px; background: #38bdf8; border: none; border-radius: 5px; color: #000; cursor: pointer; }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      height: 100vh;
+      margin: 0;
+    }
+    #chat {
+      width: 100%;
+      max-width: 500px;
+      height: 70vh;
+      overflow-y: auto;
+      border: 2px solid #334155;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #0f172a;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    }
+    .msg {
+      margin: 8px 0;
+      padding: 10px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      line-height: 1.4;
+      animation: fadeIn 0.3s ease;
+    }
+    .user {
+      background: #38bdf8;
+      color: #000;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      margin-left: auto;
+    }
+    .bot {
+      background: #facc15;
+      color: #000;
+      border-bottom-left-radius: 5px;
+      margin-right: auto;
+    }
+    #inputArea {
+      display: flex;
+      width: 100%;
+      max-width: 500px;
+    }
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 20px;
+      margin-left: 8px;
+      background: #38bdf8;
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #0ea5e9;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .typing {
+      font-style: italic;
+      color: #94a3b8;
+      margin: 5px 0;
+    }
   </style>
 </head>
 <body>
   <h1>🤖 Jarvis AI</h1>
   <div id="chat"></div>
-  <div>
+  <div id="inputArea">
     <input id="message" placeholder="Type your message..."/>
     <button onclick="sendMessage()">Send</button>
   </div>
 
   <script>
     const chatBox = document.getElementById("chat");
+
     async function sendMessage() {
       const msg = document.getElementById("message").value;
       if (!msg) return;
-      chatBox.innerHTML += `<div class="msg user">🧑: ${msg}</div>`;
+      
+      // User message
+      const userBubble = document.createElement("div");
+      userBubble.className = "msg user";
+      userBubble.innerText = msg;
+      chatBox.appendChild(userBubble);
       document.getElementById("message").value = "";
+
+      // Typing indicator
+      const typing = document.createElement("div");
+      typing.className = "typing";
+      typing.innerText = "Jarvis is typing...";
+      chatBox.appendChild(typing);
+      chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
         const res = await fetch("https://my-jarvis-1-c6h0.onrender.com/chat", {
@@ -37,9 +123,21 @@
           body: JSON.stringify({ message: msg })
         });
         const data = await res.json();
-        chatBox.innerHTML += `<div class="msg bot">🤖: ${data.reply}</div>`;
+
+        // Remove typing indicator
+        chatBox.removeChild(typing);
+
+        // Bot reply
+        const botBubble = document.createElement("div");
+        botBubble.className = "msg bot";
+        botBubble.innerText = data.reply;
+        chatBox.appendChild(botBubble);
       } catch (err) {
-        chatBox.innerHTML += `<div class="msg bot">⚠️ Error: ${err.message}</div>`;
+        chatBox.removeChild(typing);
+        const errorBubble = document.createElement("div");
+        errorBubble.className = "msg bot";
+        errorBubble.innerText = "⚠️ Error: " + err.message;
+        chatBox.appendChild(errorBubble);
       }
 
       chatBox.scrollTop = chatBox.scrollHeight;
